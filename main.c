@@ -8,46 +8,36 @@ typedef struct {
   size_t s_get_buff;
 } getLineStruct;
 
-getLineStruct *in_get(void);
+void in_get(getLineStruct *gls);
 void show_greet(void);
 
 int main(void) {
 
   // First Inits
   _Bool is_exit = 0;
-  getLineStruct *in_buff;
+  getLineStruct in_buff = {.get_buff = NULL, .s_get_buff = 0};
+  char *tokens[128];
 
   // INFO: Main Cycle (Entry Point of Exec)
   while (!is_exit) {
     show_greet();
-    in_buff = in_get();
+    in_get(&in_buff);
+
+    free(in_buff.get_buff);
+  }
+
+  return 0;
+}
+
+void tokenizer(getLineStruct *gls, char **tok) {
+  int i = 0;
+
+  for (int a = 0;; a++) {
   }
 }
 
-getLineStruct *in_get(void) {
-  getLineStruct *in_buff = malloc(sizeof(getLineStruct));
-
-  getline(&in_buff->get_buff, &in_buff->s_get_buff, stdin);
-
-  return in_buff;
-}
-
-char **tokenize_line(getLineStruct *gls) { // TODO:
-  char c = 'a';
-  char **arr;
-  int a = 0;
-  int b = 0;
-
-  // while (c != '\n' && c != '\0') {
-  //   if (c == ' ') {
-  //     a++;
-  //   }
-  // }
-
-  for (;;) {
-  }
-
-  return arr; // Ret: addr of array of tokens
+void in_get(getLineStruct *gls) {
+  getline(&gls->get_buff, &gls->s_get_buff, stdin);
 }
 
 void show_greet(void) { printf("> "); }
