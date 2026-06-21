@@ -1,7 +1,7 @@
-#include <malloc.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
-#include <unistdio.h>
+#include <unistd.h>
 
 // INFO: Struct with all user-input data from 'getline()'
 typedef struct {
@@ -23,6 +23,7 @@ int main(void) {
 
   // INFO: Main Loop (Entry Point of Exec)
   while (!is_exit) {
+    // INFO: Prep for next iteration
     tok_count = 0;
 
     // INFO: Show greet message
@@ -42,14 +43,10 @@ int main(void) {
       return 1;
     }
 
-    // WARN: Debug Output
-    for (int i = 0; i < tok_count; i++) {
-      printf("%d> %s\n", i, tok_arr[i]);
-    }
-
     free(tok_arr);
   }
 
+  // INFO: Exit point
   free(in_buff.get_buff);
   return 0;
 }
@@ -75,6 +72,7 @@ char **tokenizer(getLineStruct *gls, int *tok_count) {
       tok_arr_capacity *= 2;
       tmp = realloc(tok_arr, tok_arr_capacity * sizeof(char *));
       if (tmp == NULL) {
+        free(tok_arr);
         return NULL;
       }
       tok_arr = tmp;
@@ -93,6 +91,7 @@ char **tokenizer(getLineStruct *gls, int *tok_count) {
     tok_arr_capacity++;
     tmp = realloc(tok_arr, tok_arr_capacity * sizeof(char *));
     if (tmp == NULL) {
+      free(tok_arr);
       return NULL;
     }
     tok_arr = tmp;
