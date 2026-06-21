@@ -43,6 +43,7 @@ int main(void) {
       return 1;
     }
 
+    // INFO: Clear Tok array for the next cycle
     free(tok_arr);
   }
 
@@ -52,22 +53,26 @@ int main(void) {
 }
 
 char **tokenizer(getLineStruct *gls, int *tok_count) {
-  char **tok_arr = NULL;
-  int tok_arr_capacity = 2;
-  char **tmp = NULL;
+  char **tok_arr = NULL;    // Array of parsed tokens
+  int tok_arr_capacity = 2; // Capacity of 'tok_arr'
+  char **tmp = NULL;        // Temp pointer for 'realloc()'
 
+  // INFO: Changing all '\n' & ' ' -> '\0'
   for (int i = 0; i < gls->get_str_len; i++) {
     if (gls->get_buff[i] == ' ' || gls->get_buff[i] == '\n') {
       gls->get_buff[i] = '\0';
     }
   }
 
+  // INFO: Allocating mem for array of tokens
   tok_arr = malloc(tok_arr_capacity * sizeof(char *));
   if (tok_arr == NULL) {
     return NULL;
   }
 
+  // INFO: Parse Loop
   for (int i = 0; i < gls->get_str_len; i++) {
+    // INFO: Expanding 'tok_arr'
     if (*tok_count == tok_arr_capacity) {
       tok_arr_capacity *= 2;
       tmp = realloc(tok_arr, tok_arr_capacity * sizeof(char *));
@@ -78,6 +83,7 @@ char **tokenizer(getLineStruct *gls, int *tok_count) {
       tok_arr = tmp;
     }
 
+    // INFO: Actual parse loop
     if (gls->get_buff[i] != '\0' && i == 0) {
       tok_arr[*tok_count] = &gls->get_buff[i];
       *tok_count += 1;
@@ -87,6 +93,7 @@ char **tokenizer(getLineStruct *gls, int *tok_count) {
     }
   }
 
+  // INFO: Expanding 'tok_arr' for NULL if needed
   if (*tok_count == tok_arr_capacity) {
     tok_arr_capacity++;
     tmp = realloc(tok_arr, tok_arr_capacity * sizeof(char *));
