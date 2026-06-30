@@ -53,6 +53,12 @@ int main(void) {
       return 1;
     }
 
+    // INFO: Skip iteration if empty input
+    if (tok_arr[0] == NULL) {
+      free(tok_arr);
+      continue;
+    }
+
     // INFO: Exit handling
     if (strcmp("exit", tok_arr[0]) == 0) {
       printf("=> Exiting...");
