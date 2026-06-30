@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 // INFO: Struct with all user-input data from 'getline()'
@@ -13,6 +15,7 @@ typedef struct {
 long in_get(getLineStruct *gls);
 void show_greet(void);
 char **tokenizer(getLineStruct *gls, int *tok_count);
+int cs_exec(char **args);
 
 int main(void) {
   // INFO: Some Vars
@@ -20,6 +23,7 @@ int main(void) {
   getLineStruct in_buff = {.get_buff = NULL, .s_get_buff = 0, .get_str_len = 0};
   int tok_count = 0;
   char **tok_arr = NULL;
+  int ret_value = 0;
 
   // INFO: Main Loop (Entry Point of Exec)
   while (!is_exit) {
@@ -43,6 +47,17 @@ int main(void) {
       return 1;
     }
 
+    // TODO: Wrap this block into function
+    if (strcmp("exit", tok_arr[0]) == 0) {
+      printf("=> Exiting...");
+      free(tok_arr);
+      free(in_buff.get_buff);
+      return 0;
+    }
+
+    // INFO: Exec if not CShell command
+    ret_value = cs_exec(tok_arr);
+
     // INFO: Clear Tok array for the next cycle
     free(tok_arr);
   }
@@ -50,6 +65,23 @@ int main(void) {
   // INFO: Exit point
   free(in_buff.get_buff);
   return 0;
+}
+
+int cs_exec(char **args) {
+  int ret_status = 0;
+
+  pid_t pid = fork();
+  if (pid == 0) {
+    execvp(args[0], args);
+
+    fprintf(stderr, "!> Programm not found!\n");
+
+    exit(127);
+  } else {
+    wait(&ret_status);
+  }
+
+  return ret_status;
 }
 
 char **tokenizer(getLineStruct *gls, int *tok_count) {
