@@ -13,9 +13,10 @@ typedef struct {
 } getLineStruct;
 
 long in_get(getLineStruct *gls);
-void show_greet(void);
+void show_greet(int code);
 char **tokenizer(getLineStruct *gls, int *tok_count);
 int cs_exec(char **args);
+int parse_return_info(int ret_status);
 
 int main(void) {
   // INFO: Some Vars
@@ -24,6 +25,7 @@ int main(void) {
   int tok_count = 0;
   char **tok_arr = NULL;
   int ret_value = 0;
+  int i_count = 0;
 
   // INFO: Main Loop (Entry Point of Exec)
   while (!is_exit) {
@@ -31,7 +33,11 @@ int main(void) {
     tok_count = 0;
 
     // INFO: Show greet message
-    show_greet();
+    if (i_count == 0) {
+      printf("> ");
+    } else {
+      show_greet(parse_return_info(ret_value));
+    }
 
     // INFO: Reading user input
     in_buff.get_str_len = in_get(&in_buff);
@@ -47,7 +53,7 @@ int main(void) {
       return 1;
     }
 
-    // TODO: Wrap this block into function
+    // INFO: Exit handling
     if (strcmp("exit", tok_arr[0]) == 0) {
       printf("=> Exiting...");
       free(tok_arr);
@@ -60,11 +66,21 @@ int main(void) {
 
     // INFO: Clear Tok array for the next cycle
     free(tok_arr);
+
+    i_count++;
   }
 
   // INFO: Exit point
   free(in_buff.get_buff);
   return 0;
+}
+
+int parse_return_info(int ret_status) {
+  if (WIFEXITED(ret_status)) {
+    return WEXITSTATUS(ret_status);
+  } else {
+    return -1;
+  }
 }
 
 int cs_exec(char **args) {
@@ -144,4 +160,4 @@ long in_get(getLineStruct *gls) {
   return getline(&gls->get_buff, &gls->s_get_buff, stdin);
 }
 
-void show_greet(void) { printf("> "); }
+void show_greet(int code) { printf("[%d]> ", code); }
